@@ -8,5 +8,6 @@ urlpatterns = [
     path('list', UserListView.as_view(), name='Users'),
     path('forgot/password', ForgotPasswordView.as_view(), name='Forgot Password'),
     path('reset/password', ResetPasswordView.as_view(), name='Reset Password'),
+    path('update/<int:pk>/', UpdateView.as_view(), name='Update and delete Profile'),
 
 ]

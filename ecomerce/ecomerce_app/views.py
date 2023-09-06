@@ -9,16 +9,27 @@ from .email import*
 from django.conf import settings
 from django.core.mail import send_mail
 import random
+from django.http import Http404
 
 class UserRegistrationView(APIView):
+    user=CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
     permission_classes = (AllowAny, )
     def post(self, request):
         serializers = self.serializer_class(data=request.data)
         valid = serializers.is_valid(raise_exception = True)
         if valid:
-            email_otp(serializers.data['email'])
+            
+            
+
             serializers.save()
+            role = request.data.get('role')
+            user = CustomUser.objects.get(role=role)
+            if role == 1:
+                user.is_superuser=True
+                user.save()
+            email_otp(serializers.data['email'])
+            
             status_code= status.HTTP_201_CREATED
             response={
                 'success': True,
@@ -26,21 +37,19 @@ class UserRegistrationView(APIView):
                 'message' : 'user successfully created',
                 'user': serializers.data
            }
-        return Response( response, status=status_code)
+            return Response( response, status=status_code)
     
 class VerifyOtp(APIView):
-    user = CustomUser.objects.all()
+    serializer_class = VerifyAccountSerializer
     permission_classes = (AllowAny,)
     def post(self, request):
         otp = request.data.get('otp')
         email = request.data.get('email')
 
-        if not email:
-            return Response({'error': 'email is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        if not otp:
-            return Response({'error': 'OTP is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not otp:
+            return Response({'error': 'email and otp is required.'}, status=status.HTTP_400_BAD_REQUEST)
         # Get the user and their associated OTP from the database (assuming you have stored it during registration)
-        user = request.user # Assuming the user is authenticated
+        user = CustomUser.objects.get(email=email) 
         if email != user.email:
             return Response({'error': 'Invalid email.'}, status=status.HTTP_400_BAD_REQUEST)
         # Compare the received OTP with the one in the database
@@ -55,26 +64,25 @@ class VerifyOtp(APIView):
 class UserLoginView(APIView):
     serializer_class = UserLoginSerializer
     permission_classes = (AllowAny, )
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         valid = serializer.is_valid(raise_exception=True)
 
         if valid:
             status_code = status.HTTP_200_OK
-
-        response = {
-            'success': True,
-            'statusCode': status_code,
-            'message': 'User logged in successfully',
-            'access': serializer.data['access'],
-            'refresh': serializer.data['refresh'],
-            'authenticatedUser': {
-                'email': serializer.data['email']
+        
+            response = {
+                'success': True,
+                'statusCode': status_code,
+                'message': 'User logged in successfully',
+                'access': serializer.data['access'],
+                'refresh': serializer.data['refresh'],
+                'authenticatedUser': {
+                    'email': serializer.data['email']
+                    }
                 }
-            }
 
-        return Response(response, status=status_code)
+            return Response(response, status=status_code)
     
 class UserListView(APIView):
     serializer_class = UserListSerializer
@@ -95,10 +103,16 @@ class UserListView(APIView):
 class ForgotPasswordView(APIView):
     serializer_class = ForgotPasswordSerializer
     permission_classes = (AllowAny,)
-    def post(self, request):
-        serializers = self.serializer_class(data=request.data)
-        valid = serializers.is_valid(raise_exception = True)
+    def post(self, request):      
+        serializer = self.serializer_class(data=request.data)
+        valid = serializer.is_valid(raise_exception = True)
+        
         if valid:
+            email = serializer.validated_data['email']
+            try:
+                user = CustomUser.objects.get(email=email)
+            except CustomUser.DoesNotExist:
+                return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
             def email_otp(email):
                 subject = "Otp for Forgot Passwod"
                 otp = random.randint(100000, 999999)
@@ -108,16 +122,17 @@ class ForgotPasswordView(APIView):
                 CustomUser_obj = CustomUser.objects.get(email=email)
                 CustomUser_obj.otp = otp
                 CustomUser_obj.save()
-            email_otp(serializers.data['email'])
+            email_otp(serializer.data['email'])
             
             status_code= status.HTTP_202_ACCEPTED
             response={
                 'success': True,
                 'status': status_code,
                 'message' : 'sent otp succesfully',
-                'user': serializers.data
+                'user': serializer.data
            }
             return Response( response, status=status_code)
+        
 
 class ResetPasswordView(APIView):
     serializer_class = ForgotPasswordSerializer
@@ -146,4 +161,25 @@ class ResetPasswordView(APIView):
             
         }
         return Response(response, status_code)
+    
+
+class UpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return CustomUser.objects.get(pk=pk)
+        except CustomUser.DoesNotExist:
+            raise Http404
+    def put(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = UpdateSerializer(user, request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response (serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk):
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 # Create your views here.
