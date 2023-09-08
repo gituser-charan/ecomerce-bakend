@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 import random
 from django.http import Http404
-
+from rest_framework import viewsets
 class UserRegistrationView(APIView):
     user=CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
@@ -182,4 +182,126 @@ class UpdateView(APIView):
         user = self.get_object(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CategoriesViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Categories.objects.all()
+    serializer_class = CategoriesSerializer
+    permission_classes = [IsAuthenticated]
+
+class SubCategoriesViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = SubCategories.objects.all()
+    serializer_class = SubCategoriesSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Products.objects.all()
+    serializer_class = ProductsSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductMediaViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductMedia.objects.all()
+    serializer_class = ProductMediaSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductTransactionViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductTransaction.objects.all()
+    serializer_class = ProductTransactionSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductDetailsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductDetails.objects.all()
+    serializer_class = ProductDetailsSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductAboutViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductAbout.objects.all()
+    serializer_class = ProductAboutSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductTagsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductTags.objects.all()
+    serializer_class = ProductTagsSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductQuestionsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductQuestions.objects.all()
+    serializer_class = ProductQuestionsSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductReviewsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductReviews.objects.all()
+    serializer_class = ProductReviewsSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductReviewVotingViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductReviewVoting.objects.all()
+    serializer_class = ProductReviewVotingSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductVarientViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductVarient.objects.all()
+    serializer_class = ProductVarientSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductVarientItemsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductVarientItems.objects.all()
+    serializer_class = ProductVarientItemsSerializer
+    permission_classes = [IsAuthenticated]
+
+class CustomerOrdersViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = CustomerOrders.objects.all()
+    serializer_class = CustomerOrdersSerializer
+    permission_classes = [IsAuthenticated]
+
+class OrderDeliveryStatusViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = OrderDeliveryStatus.objects.all()
+    serializer_class = OrderDeliveryStatusSerializer
+    permission_classes = [IsAuthenticated]
+
 # Create your views here.
+
