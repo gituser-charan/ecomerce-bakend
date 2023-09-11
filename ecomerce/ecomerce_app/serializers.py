@@ -107,16 +107,6 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
         model = ProductDetails
         fields = "__all__"
 
-class ProductAboutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductAbout
-        fields = "__all__"
-
-class ProductTagsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductTags
-        fields = "__all__"
-
 class ProductQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductQuestions
@@ -130,16 +120,6 @@ class ProductReviewsSerializer(serializers.ModelSerializer):
 class ProductReviewVotingSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductReviewVoting
-        fields = "__all__"
-
-class ProductVarientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductVarient
-        fields = "__all__"
-
-class ProductVarientItemsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductVarientItems
         fields = "__all__"
 
 class CustomerOrdersSerializer(serializers.ModelSerializer):

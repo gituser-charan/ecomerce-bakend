@@ -231,21 +231,8 @@ class ProductDetailsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductDetailsSerializer
     permission_classes = [IsAuthenticated]
 
-class ProductAboutViewSet(viewsets.ModelViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
-    queryset = ProductAbout.objects.all()
-    serializer_class = ProductAboutSerializer
-    permission_classes = [IsAuthenticated]
 
-class ProductTagsViewSet(viewsets.ModelViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
-    queryset = ProductTags.objects.all()
-    serializer_class = ProductTagsSerializer
-    permission_classes = [IsAuthenticated]
+
 
 class ProductQuestionsViewSet(viewsets.ModelViewSet):
     """
@@ -271,21 +258,7 @@ class ProductReviewVotingViewSet(viewsets.ModelViewSet):
     serializer_class = ProductReviewVotingSerializer
     permission_classes = [IsAuthenticated]
 
-class ProductVarientViewSet(viewsets.ModelViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
-    queryset = ProductVarient.objects.all()
-    serializer_class = ProductVarientSerializer
-    permission_classes = [IsAuthenticated]
 
-class ProductVarientItemsViewSet(viewsets.ModelViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
-    queryset = ProductVarientItems.objects.all()
-    serializer_class = ProductVarientItemsSerializer
-    permission_classes = [IsAuthenticated]
 
 class CustomerOrdersViewSet(viewsets.ModelViewSet):
     """

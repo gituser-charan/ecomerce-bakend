@@ -75,7 +75,7 @@ class Categories(models.Model):
 class SubCategories(models.Model):
     category_id=models.ForeignKey(Categories,on_delete=models.CASCADE)
     title=models.CharField(max_length=255)
-    thumbnail=models.FileField()
+    thumbnail=models.FileField(upload_to='images/')
     description=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
     is_active=models.IntegerField(default=1)
@@ -115,17 +115,6 @@ class ProductDetails(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     is_active=models.IntegerField(default=1)
 
-class ProductAbout(models.Model):
-    product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
-    created_at=models.DateTimeField(auto_now_add=True)
-    is_active=models.IntegerField(default=1)
-
-class ProductTags(models.Model):
-    product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
-    created_at=models.DateTimeField(auto_now_add=True)
-    is_active=models.IntegerField(default=1)
 
 class ProductQuestions(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
@@ -150,15 +139,6 @@ class ProductReviewVoting(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     is_active=models.IntegerField(default=1)
 
-class ProductVarient(models.Model):
-    title=models.CharField(max_length=255)
-    created_at=models.DateTimeField(auto_now_add=True)
-
-class ProductVarientItems(models.Model):
-    product_varient_id=models.ForeignKey(ProductVarient,on_delete=models.CASCADE)
-    product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
-    created_at=models.DateTimeField(auto_now_add=True)
 
 class CustomerOrders(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.DO_NOTHING)
