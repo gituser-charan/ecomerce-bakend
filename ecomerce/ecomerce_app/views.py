@@ -15,6 +15,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
 
 class UserRegistrationView(APIView):
     user=CustomUser.objects.all()
@@ -154,21 +157,26 @@ class ForgotPasswordView(APIView):
         
 
 class ResetPasswordView(APIView):
-    serializer_class = ForgotPasswordSerializer
+    serializer_class = ResetPasswordSerializer
     permission_classes = (AllowAny,)
     def post(self, request):
+        email = request.data.get('email')
         otp = request.data.get('otp')
         new = request.data.get('new_password')
         confirm = request.data.get('confirm_new_password')
         
         user = CustomUser.objects.all()
+        if not email:
+            return Response({'error': 'email is required.'}, status=status.HTTP_400_BAD_REQUEST)
         if not otp:
             return Response({'error': 'OTP is required.'}, status=status.HTTP_400_BAD_REQUEST)
         # Get the user and their associated OTP from the database (assuming you have stored it during registration)
         if new != confirm: 
             return Response({'error': 'New password doesnot match with confirm password.'}, status=status.HTTP_404_NOT_FOUND)
-        user.reset_password(new)
+        user = CustomUser.objects.get(email=email)
+        user.set_password(new)
         user.save()
+        update_session_auth_hash(request, user)
         status_code = status.HTTP_200_OK
             
 

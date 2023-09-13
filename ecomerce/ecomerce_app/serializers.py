@@ -41,7 +41,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 class ResetPasswordSerializer(serializers.Serializer):
     class Meta:
         model = CustomUser
-        
+        email = serializers.EmailField()
         otp = models.CharField(max_length=6)
         new_password = serializers.CharField(max_length=20, write_only=True)
         confirm_new_password = serializers.CharField(max_length=20, write_only=True)
