@@ -11,14 +11,20 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
-    def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault('is_active', True)
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_verified', True)
+        extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', 1)
 
-        if extra_fields.get('role') != 1:
-            raise ValueError('Superuser must have role of Global Admin')
-        return self.create_user(email, password, **extra_fields)
 
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        # Ensure there is no existing superuser
+        if self.filter(is_superuser=True).exists():
+            raise ValueError('A superuser already exists.')
+
+        return self.create_user(email, password, **extra_fields)

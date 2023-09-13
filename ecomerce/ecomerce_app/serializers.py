@@ -23,38 +23,11 @@ class VerifyAccountSerializer(serializers.Serializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128, write_only=True)
+    # is_verified = serializers.BooleanField(default=True)
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
 
-    def create(self, validated_date):
-        pass
 
-    def update(self, instance, validated_data):
-        pass
-
-    def validate(self, data):
-        email = data['email']
-        password = data['password']
-        user = authenticate(email=email, password=password) or CustomUser.objects.get(email=email, password=password)
-        if  email!=user.email:
-            raise serializers.ValidationError("Invalid login credentials")
-        try:
-            refresh = RefreshToken.for_user(user)
-            refresh_token = str(refresh)
-            access_token = str(refresh.access_token)
-            update_last_login(None, user)
-            user = CustomUser.objects.get(email=email, password=password)
-            validation = {
-                'access': access_token,
-                'refresh': refresh_token,
-                'email': user.email,
-                'role': user.role,
-
-            }
-            return validation
-        except CustomUser.DoesNotExist:
-            raise serializers.ValidationError("Invalid login credentials")
-        
 class UserListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -67,10 +40,15 @@ class ForgotPasswordSerializer(serializers.Serializer):
         
 class ResetPasswordSerializer(serializers.Serializer):
     class Meta:
+        model = CustomUser
         
         otp = models.CharField(max_length=6)
         new_password = serializers.CharField(max_length=20, write_only=True)
         confirm_new_password = serializers.CharField(max_length=20, write_only=True)
+
+        def create(self, validated_data):
+            auth_user = CustomUser.objects.create_user(**validated_data)
+            return auth_user
 
 class UpdateSerializer(serializers.ModelSerializer):
     class Meta:

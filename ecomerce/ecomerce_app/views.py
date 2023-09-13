@@ -11,6 +11,11 @@ from django.core.mail import send_mail
 import random
 from django.http import Http404
 from rest_framework import viewsets
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate, login
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 class UserRegistrationView(APIView):
     user=CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
@@ -23,11 +28,6 @@ class UserRegistrationView(APIView):
             
 
             serializers.save()
-            role = request.data.get('role')
-            user = CustomUser.objects.get(role=role)
-            if role == 1:
-                user.is_superuser=True
-                user.save()
             email_otp(serializers.data['email'])
             
             status_code= status.HTTP_201_CREATED
@@ -61,28 +61,47 @@ class VerifyOtp(APIView):
             return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
             
             
-class UserLoginView(APIView):
+class UserLoginView(TokenObtainPairView):
     serializer_class = UserLoginSerializer
     permission_classes = (AllowAny, )
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         valid = serializer.is_valid(raise_exception=True)
+        user = CustomUser.objects.all()
+        
 
         if valid:
-            status_code = status.HTTP_200_OK
+            email= serializer.validated_data['email']
+            password= serializer.validated_data['password']
         
-            response = {
-                'success': True,
-                'statusCode': status_code,
-                'message': 'User logged in successfully',
-                'access': serializer.data['access'],
-                'refresh': serializer.data['refresh'],
-                'authenticatedUser': {
-                    'email': serializer.data['email']
-                    }
-                }
+            user = authenticate(email=email, password=password)
+            if user is not None:
+                if user.is_verified:
+                    login(request, user)
+                    refresh = RefreshToken.for_user(user)
+                    refresh_token = str(refresh)
+                    access_token = str(refresh.access_token)
 
-            return Response(response, status=status_code)
+                    update_last_login(None, user)
+                    status_code = status.HTTP_200_OK
+                    response = {
+                            'success': True,
+                            'statusCode': status_code,
+                            'message': 'User logged in successfully',
+                            'access': access_token,
+                            'refresh': refresh_token,
+                            # 'email' : CustomUser.objects.get(email)
+                        }
+
+                    return Response(response, status=status_code)
+                else:
+                        return Response({'error': 'Email not verified'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+            
     
 class UserListView(APIView):
     serializer_class = UserListSerializer
@@ -142,15 +161,14 @@ class ResetPasswordView(APIView):
         new = request.data.get('new_password')
         confirm = request.data.get('confirm_new_password')
         
-        users = CustomUser.objects.all()
+        user = CustomUser.objects.all()
         if not otp:
             return Response({'error': 'OTP is required.'}, status=status.HTTP_400_BAD_REQUEST)
         # Get the user and their associated OTP from the database (assuming you have stored it during registration)
         if new != confirm: 
             return Response({'error': 'New password doesnot match with confirm password.'}, status=status.HTTP_404_NOT_FOUND)
-        for user in users:
-            user.password = new
-            user.save()
+        user.reset_password(new)
+        user.save()
         status_code = status.HTTP_200_OK
             
 
@@ -158,6 +176,7 @@ class ResetPasswordView(APIView):
             'success': True,
             'statusCode': status_code,
             'message': 'Your password is updated succesfully',
+
             
         }
         return Response(response, status_code)

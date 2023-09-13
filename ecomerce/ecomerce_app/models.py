@@ -47,6 +47,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             MaxValueValidator(9999999999),
             MinValueValidator(1000000000)
         ], null=True)
+    is_staff = models.BooleanField(default=False)
     display_pic = models.ImageField(upload_to='images/', default='default.png')
     address = models.TextField(max_length=1000, null=True)
     created_date = models.DateTimeField(default=timezone.now)
