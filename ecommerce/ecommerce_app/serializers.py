@@ -50,11 +50,10 @@ class ResetPasswordSerializer(serializers.Serializer):
             auth_user = CustomUser.objects.create_user(**validated_data)
             return auth_user
 
-class UpdateSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ('first_name', 'last_name', 'date_of_birth', 'gender', 'mobile', 'display_pic', 'address')
-
+        model = UserProfile
+        fields = "__all__"
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
@@ -67,7 +66,7 @@ class SubCategoriesSerializer(serializers.ModelSerializer):
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubCategories
+        model = Brand
         fields = "__all__"
 
 class ProductsSerializer(serializers.ModelSerializer):
@@ -95,8 +94,42 @@ class ProductQuestionsSerializer(serializers.ModelSerializer):
         model = ProductQuestions
         fields = "__all__"
 
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductAnswer
+        fields = "__all__"
+
 class ProductReviewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductReviews
         fields = "__all__"
 
+class VarientsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariant
+        fields = "__all__"
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+
+class CartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = "__all__"
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__"
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = "__all__"
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"

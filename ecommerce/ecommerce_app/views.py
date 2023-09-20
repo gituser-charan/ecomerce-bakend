@@ -13,6 +13,7 @@ from django.http import Http404
 from rest_framework import viewsets
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
+from rest_framework import generics
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import update_session_auth_hash
@@ -184,15 +185,11 @@ class ResetPasswordView(APIView):
             'success': True,
             'statusCode': status_code,
             'message': 'Your password is updated succesfully',
-
-            
         }
         return Response(response, status_code)
     
-
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get_object(self, pk):
         try:
             return CustomUser.objects.get(pk=pk)
@@ -202,6 +199,19 @@ class DeleteAccountView(APIView):
         user = self.get_object(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class CreateUserProfile(generics.CreateAPIView):
+    """
+    create a new user profile.
+    """
+    permission_classes = [IsAuthenticated]
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+class UpdateUserProfile(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 class CategoriesViewSet(viewsets.ModelViewSet):
     """
@@ -235,6 +245,14 @@ class ProductsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductsSerializer
     permission_classes = [IsAuthenticated]
 
+class VarientsViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductVariant.objects.all()
+    serializer_class = VarientsSerializer
+    permission_classes = [IsAuthenticated]
+    
 class ProductMediaViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.
@@ -259,15 +277,20 @@ class ProductDetailsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductDetailsSerializer
     permission_classes = [IsAuthenticated]
 
-
-
-
 class ProductQuestionsViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = ProductQuestions.objects.all()
     serializer_class = ProductQuestionsSerializer
+    permission_classes = [IsAuthenticated]
+
+class AnswerViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = ProductAnswer.objects.all()
+    serializer_class = AnswerSerializer
     permission_classes = [IsAuthenticated]
 
 class ProductReviewsViewSet(viewsets.ModelViewSet):
@@ -278,9 +301,60 @@ class ProductReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductReviewsSerializer
     permission_classes = [IsAuthenticated]
 
+class CartViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
 
+class CartItemListView(generics.ListCreateAPIView):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
 
+class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
 
+class OrderViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+class OrderItemListView(generics.ListCreateAPIView):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+class OrderItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
 
 # Create your views here.
-

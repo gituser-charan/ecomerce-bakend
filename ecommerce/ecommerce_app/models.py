@@ -49,6 +49,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class UserProfile(models.Model):
+
+    MALE = 1
+    FEMALE = 2
+    OTHERS = 3
+
+    GENDER_CHOICES = (
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (OTHERS, 'Others')
+    )
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    shipping_address = models.TextField()
+    date_of_birth = models.DateField(null=True)
+    gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES)
+    mobile = models.BigIntegerField(unique=True, validators=[
+            MaxValueValidator(9999999999),
+            MinValueValidator(1000000000)
+        ])
+    display_pic = models.ImageField(upload_to='images/', default='default.png')
   
 class Categories(models.Model):
     title=models.CharField(max_length=255)
@@ -117,26 +138,6 @@ class ProductDetails(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='images/')
 
-class UserProfile(models.Model):
-
-    MALE = 1
-    FEMALE = 2
-    OTHERS = 3
-
-    GENDER_CHOICES = (
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (OTHERS, 'Others')
-    )
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    shipping_address = models.TextField()
-    date_of_birth = models.DateField(null=True)
-    gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES)
-    mobile = models.BigIntegerField(unique=True, validators=[
-            MaxValueValidator(9999999999),
-            MinValueValidator(1000000000)
-        ])
-    display_pic = models.ImageField(upload_to='images/', default='default.png')
 
 class ProductQuestions(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
@@ -174,7 +175,6 @@ class CartItem(models.Model):
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
-
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     items = models.ManyToManyField('ProductVariant', through='OrderItem')
@@ -188,8 +188,6 @@ class Order(models.Model):
     ])
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Order {self.id} - {self.user.first_name} - {self.total_price}"
 
 
 class OrderItem(models.Model):
