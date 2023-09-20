@@ -69,11 +69,11 @@ class UserProfile(models.Model):
             MaxValueValidator(9999999999),
             MinValueValidator(1000000000)
         ])
-    display_pic = models.ImageField(upload_to='images/', default='default.png')
+    display_pic = models.ImageField(upload_to='images/', null=True, blank=True)
   
 class Categories(models.Model):
     title=models.CharField(max_length=255)
-    thumbnail=models.FileField()
+    thumbnail=models.ImageField(upload_to='images/', null=True, blank=True)
     description=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
     is_active=models.IntegerField(default=1)
@@ -84,14 +84,14 @@ class Categories(models.Model):
 class SubCategories(models.Model):
     category_id=models.ForeignKey(Categories,on_delete=models.CASCADE)
     title=models.CharField(max_length=255)
-    thumbnail=models.FileField(upload_to='images/')
+    thumbnail=models.ImageField(upload_to='images/', null=True, blank=True)
     description=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
     is_active=models.IntegerField(default=1)
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=225)
-    brand_image = models.ImageField(upload_to='images/')
+    brand_image = models.ImageField(upload_to='images/', null=True, blank=True)
     
 class Products(models.Model):
     subcategories_id=models.ForeignKey(SubCategories,on_delete=models.CASCADE)
@@ -101,7 +101,7 @@ class Products(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -136,8 +136,7 @@ class ProductDetails(models.Model):
     title=models.CharField(max_length=255)
     title_details=models.CharField(max_length=255)
     created_at=models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='images/')
-
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
 
 class ProductQuestions(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE)

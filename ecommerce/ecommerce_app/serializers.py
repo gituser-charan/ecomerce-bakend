@@ -3,7 +3,7 @@ from .models import*
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from django.conf import settings
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -51,28 +51,53 @@ class ResetPasswordSerializer(serializers.Serializer):
             return auth_user
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    display_pic = serializers.SerializerMethodField()
     class Meta:
         model = UserProfile
         fields = "__all__"
+    def get_display_pic(self, obj):
+        # Define image URLs based on gender
+        if obj.gender == 1:
+            return 'default_male_profile.jpg'
+        elif obj.gender == 2:
+            return 'default_female_profile.jpg'
+        else:
+            return 'default.jpg'
+        
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = "__all__"
-
+    thumbnail = serializers.ImageField(
+            default=settings.MEDIA_URL + 'default_image.jpg',
+            required=False  # Make the field optional
+        )
+    
 class SubCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategories
         fields = "__all__"
+    thumbnail = serializers.ImageField(
+            default=settings.MEDIA_URL + 'default_image.jpg',
+            required=False  # Make the field optional
+        )
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = "__all__"
-
+    brand_image = serializers.ImageField(
+            default=settings.MEDIA_URL + 'default_image.jpg',
+            required=False  # Make the field optional
+        )
 class ProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Products
         fields = "__all__"
+    image = serializers.ImageField(
+            default=settings.MEDIA_URL + 'default_image.jpg',
+            required=False  # Make the field optional
+        )
 
 class ProductMediaSerializer(serializers.ModelSerializer):
     class Meta:
