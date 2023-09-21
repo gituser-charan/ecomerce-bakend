@@ -15,12 +15,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
 from rest_framework.decorators import action
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
-
+from rest_framework.pagination import PageNumberPagination
+TIME_ZONE ='Asia/Kolkata'
 class UserRegistrationView(APIView):
     user=CustomUser.objects.all()
     serializer_class = UserRegistrationSerializer
@@ -95,7 +95,8 @@ class UserLoginView(TokenObtainPairView):
                             'message': 'User logged in successfully',
                             'access': access_token,
                             'refresh': refresh_token,
-                            # 'email' : CustomUser.objects.get(email)
+                            'last_login': user.last_login,
+                            'user': serializer.data
                         }
 
                     return Response(response, status=status_code)
@@ -222,11 +223,13 @@ class CreateUserProfile(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    pagination_class = PageNumberPagination
 
 class UpdateUserProfile(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    pagination_class = PageNumberPagination
 
 class CategoriesViewSet(viewsets.ModelViewSet):
     """
@@ -235,6 +238,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class SubCategoriesViewSet(viewsets.ModelViewSet):
     """
@@ -243,6 +247,7 @@ class SubCategoriesViewSet(viewsets.ModelViewSet):
     queryset = SubCategories.objects.all()
     serializer_class = SubCategoriesSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class BrandViewSet(viewsets.ModelViewSet):
     """
@@ -251,6 +256,7 @@ class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class ProductsViewSet(viewsets.ModelViewSet):
     """
@@ -259,6 +265,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class VarientsViewSet(viewsets.ModelViewSet):
     """
@@ -267,6 +274,7 @@ class VarientsViewSet(viewsets.ModelViewSet):
     queryset = ProductVariant.objects.all()
     serializer_class = VarientsSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
     
 class ProductMediaViewSet(viewsets.ModelViewSet):
     """
@@ -275,6 +283,7 @@ class ProductMediaViewSet(viewsets.ModelViewSet):
     queryset = ProductMedia.objects.all()
     serializer_class = ProductMediaSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class ProductTransactionViewSet(viewsets.ModelViewSet):
     """
@@ -283,6 +292,7 @@ class ProductTransactionViewSet(viewsets.ModelViewSet):
     queryset = ProductTransaction.objects.all()
     serializer_class = ProductTransactionSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class ProductDetailsViewSet(viewsets.ModelViewSet):
     """
@@ -291,6 +301,7 @@ class ProductDetailsViewSet(viewsets.ModelViewSet):
     queryset = ProductDetails.objects.all()
     serializer_class = ProductDetailsSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class ProductQuestionsViewSet(viewsets.ModelViewSet):
     """
@@ -299,6 +310,7 @@ class ProductQuestionsViewSet(viewsets.ModelViewSet):
     queryset = ProductQuestions.objects.all()
     serializer_class = ProductQuestionsSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class AnswerViewSet(viewsets.ModelViewSet):
     """
@@ -307,6 +319,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
     queryset = ProductAnswer.objects.all()
     serializer_class = AnswerSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class ProductReviewsViewSet(viewsets.ModelViewSet):
     """
@@ -315,6 +328,7 @@ class ProductReviewsViewSet(viewsets.ModelViewSet):
     queryset = ProductReviews.objects.all()
     serializer_class = ProductReviewsSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class CartViewSet(viewsets.ModelViewSet):
     """
@@ -323,6 +337,7 @@ class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class CartItemListView(generics.ListCreateAPIView):
     """
@@ -331,6 +346,7 @@ class CartItemListView(generics.ListCreateAPIView):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -339,6 +355,7 @@ class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class OrderViewSet(viewsets.ModelViewSet):
     """
@@ -347,6 +364,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class OrderItemListView(generics.ListCreateAPIView):
     """
@@ -355,6 +373,7 @@ class OrderItemListView(generics.ListCreateAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class OrderItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -363,6 +382,7 @@ class OrderItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 class PaymentViewSet(viewsets.ModelViewSet):
     """
@@ -371,5 +391,6 @@ class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
 
 # Create your views here.

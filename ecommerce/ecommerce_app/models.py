@@ -47,7 +47,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return self.first_name+self.last_name
     
 class ShippingAddress(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

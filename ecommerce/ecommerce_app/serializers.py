@@ -23,10 +23,9 @@ class VerifyAccountSerializer(serializers.Serializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128, write_only=True)
-    # is_verified = serializers.BooleanField(default=True)
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
-
+    last_login = serializers.DateTimeField(default=timezone.now, format='%Y-%m-%d %H:%M:%S %Z')
 
 class UserListSerializer(serializers.ModelSerializer):
 
