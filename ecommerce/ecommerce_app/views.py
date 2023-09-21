@@ -14,6 +14,7 @@ from rest_framework import viewsets
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
+from rest_framework.decorators import action
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import update_session_auth_hash
@@ -200,6 +201,20 @@ class DeleteAccountView(APIView):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = ShippingAddress.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+    @action(detail=False, methods=['GET'])
+    def get_addresses_by_user(self, request):
+        user = request.query_params.get('user')
+        if user:
+            addresses = ShippingAddress.objects.filter(user_id=user)
+            serializer = AddressSerializer(addresses, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({'message': 'Please provide a user parameter in the query.'}, status=400)
+        
 class CreateUserProfile(generics.CreateAPIView):
     """
     create a new user profile.

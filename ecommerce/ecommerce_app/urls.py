@@ -17,6 +17,7 @@ routers.register('answers', views.AnswerViewSet, "answers for product questions"
 routers.register('cart', views.CartViewSet, "Cart")
 routers.register('order',views.OrderViewSet , "Order")
 routers.register('payment',views.PaymentViewSet , "Payment")
+routers.register('address',views.AddressViewSet , "Address")
 
 urlpatterns = [
     path('', include(routers.urls)),

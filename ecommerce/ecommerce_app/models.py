@@ -33,7 +33,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     otp = models.CharField(max_length=6, default=000000)
     role = models.PositiveIntegerField(choices=ROLE_CHOICES)
     is_staff = models.BooleanField(default=False)
-    address = models.TextField(max_length=1000, null=True)
     created_date = models.DateTimeField(default=timezone.now)
     modified_date = models.DateTimeField(default=timezone.now)
     is_verified = models.BooleanField(default=False)
@@ -49,6 +48,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.TextField(max_length=500)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
 
 class UserProfile(models.Model):
 
@@ -62,7 +68,6 @@ class UserProfile(models.Model):
         (OTHERS, 'Others')
     )
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    shipping_address = models.TextField()
     date_of_birth = models.DateField(null=True)
     gender = models.PositiveSmallIntegerField(choices=GENDER_CHOICES)
     mobile = models.BigIntegerField(unique=True, validators=[

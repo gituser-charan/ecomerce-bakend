@@ -63,7 +63,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return 'default_female_profile.jpg'
         else:
             return 'default.jpg'
-        
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = "__all__"
+
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
@@ -72,7 +77,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
             default=settings.MEDIA_URL + 'default_image.jpg',
             required=False  # Make the field optional
         )
-    
+
 class SubCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategories
