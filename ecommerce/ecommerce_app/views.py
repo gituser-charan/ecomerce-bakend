@@ -10,7 +10,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 import random
 from django.http import Http404
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from rest_framework import generics
@@ -20,6 +21,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
 from rest_framework.pagination import PageNumberPagination
+from .filters import*
 TIME_ZONE ='Asia/Kolkata'
 class UserRegistrationView(APIView):
     user=CustomUser.objects.all()
@@ -266,6 +268,8 @@ class ProductsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductsSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filterset_class = ProductsFilter
 
 class VarientsViewSet(viewsets.ModelViewSet):
     """
@@ -275,6 +279,8 @@ class VarientsViewSet(viewsets.ModelViewSet):
     serializer_class = VarientsSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filterset_class = ProductVariantFilter
     
 class ProductMediaViewSet(viewsets.ModelViewSet):
     """
@@ -302,6 +308,8 @@ class ProductDetailsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductDetailsSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filterset_class = ProductDetailsFilter
 
 class ProductQuestionsViewSet(viewsets.ModelViewSet):
     """
@@ -311,6 +319,8 @@ class ProductQuestionsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductQuestionsSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filterset_class = ProductQuestionsFilter
 
 class AnswerViewSet(viewsets.ModelViewSet):
     """
@@ -329,6 +339,8 @@ class ProductReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ProductReviewsSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filterset_class = ProductReviewsFilter
 
 class CartViewSet(viewsets.ModelViewSet):
     """

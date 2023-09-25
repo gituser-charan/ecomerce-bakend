@@ -95,15 +95,20 @@ class SubCategories(models.Model):
     is_active=models.IntegerField(default=1)
 
 class Brand(models.Model):
-    brand_name = models.CharField(max_length=225)
+    brand_name = models.CharField(max_length=225, unique=True)
     brand_image = models.ImageField(upload_to='images/', null=True, blank=True)
     
+class ProductVariant(models.Model):
+    variant_name = models.CharField(max_length=100)
+    stock_quantity = models.PositiveIntegerField(default=0)
+
+
 class Products(models.Model):
     subcategories_id=models.ForeignKey(SubCategories,on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
+    variant=models.ForeignKey(ProductVariant,on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    description = models.TextField()
+    description = models.TextField(default=" ")
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
@@ -113,11 +118,6 @@ class Products(models.Model):
     def __str__(self):
         return self.name
     
-class ProductVariant(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    variant_name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.PositiveIntegerField(default=0)
 
 class ProductMedia(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
