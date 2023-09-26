@@ -75,24 +75,41 @@ class UserProfile(models.Model):
             MinValueValidator(1000000000)
         ])
     display_pic = models.ImageField(upload_to='images/', null=True, blank=True)
+
+class Inventory(models.Model):
+    name=models.CharField(max_length=255)
+    profile=models.ImageField(upload_to='images/', null=True, blank=True)
+    description=models.TextField()
+    created_at=models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
   
 class Categories(models.Model):
-    title=models.CharField(max_length=255)
+    name=models.CharField(max_length=255)
     thumbnail=models.ImageField(upload_to='images/', null=True, blank=True)
     description=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    is_active=models.IntegerField(default=1)
+
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class SubCategories(models.Model):
     category_id=models.ForeignKey(Categories,on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
+    name=models.CharField(max_length=255)
     thumbnail=models.ImageField(upload_to='images/', null=True, blank=True)
     description=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    is_active=models.IntegerField(default=1)
+    modified_at=models.DateTimeField(default=timezone.now)
+
+class Discount(models.Model):
+    name=models.CharField(max_length=255)
+    description=models.TextField()
+    discount_percent = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active=models.BooleanField(default=True)
+    created_at=models.DateTimeField(default=timezone.now)
+    modified_at=models.DateTimeField(default=timezone.now)
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=225, unique=True)
@@ -107,6 +124,8 @@ class Products(models.Model):
     subcategories_id=models.ForeignKey(SubCategories,on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
     variant=models.ForeignKey(ProductVariant,on_delete=models.CASCADE)
+    inventory_id=models.ForeignKey(Inventory, on_delete=models.CASCADE)
+    # discount_id=models.CharField(max_length=20, )
     name = models.CharField(max_length=255)
     description = models.TextField(default=" ")
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -138,8 +157,8 @@ class ProductTransaction(models.Model):
 
 class ProductDetails(models.Model):
     product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
-    title=models.CharField(max_length=255)
-    title_details=models.CharField(max_length=255)
+    name=models.CharField(max_length=255)
+    name_details=models.CharField(max_length=255)
     created_at=models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
 
@@ -170,13 +189,13 @@ class ProductReviews(models.Model):
     
 class Cart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    items = models.ManyToManyField(ProductVariant, through='CartItem')
+    items = models.ManyToManyField(Products, through='CartItem')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
+    products = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
 class Order(models.Model):

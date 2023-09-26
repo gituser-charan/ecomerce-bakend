@@ -108,12 +108,12 @@ class ProductsSerializer(serializers.ModelSerializer):
             default=settings.MEDIA_URL + 'default_image.jpg',
             required=False  # Make the field optional
         )
-    def to_representation(self, instance):
-        rep = super(ProductsSerializer, self).to_representation(instance)
-        rep['subcategories_id'] = instance.subcategories_id.title
-        rep['brand'] = instance.brand.brand_name
-        rep['variant'] = instance.variant.variant_name
-        return rep
+    # def to_representation(self, instance):
+    #     rep = super(ProductsSerializer, self).to_representation(instance)
+    #     rep['subcategories_id'] = {instance.subcategories_id.id, instance.subcategories_id.title, instance.subcategories_id.description}
+    #     rep['brand'] = instance.brand.brand_name
+    #     rep['variant'] = instance.variant.variant_name
+    #     return rep
     
 class ProductMediaSerializer(serializers.ModelSerializer):
     class Meta:
