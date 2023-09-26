@@ -233,6 +233,15 @@ class UpdateUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     pagination_class = PageNumberPagination
 
+class InventoryViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = Inventory.objects.all()
+    serializer_class = InventorySerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+
 class CategoriesViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.

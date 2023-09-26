@@ -8,6 +8,7 @@ import uuid
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from .managers import CustomUserManager
+# from .signals import*
 class CustomUser(AbstractBaseUser, PermissionsMixin):
         # These fields tie to the roles!
     ADMIN = 1
@@ -125,7 +126,7 @@ class Products(models.Model):
     brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
     variant=models.ForeignKey(ProductVariant,on_delete=models.CASCADE)
     inventory_id=models.ForeignKey(Inventory, on_delete=models.CASCADE)
-    # discount_id=models.CharField(max_length=20, )
+    discount_id=models.IntegerField(null=True )
     name = models.CharField(max_length=255)
     description = models.TextField(default=" ")
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -197,10 +198,19 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     products = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+
+class OrderItem(models.Model):
+    products = models.ForeignKey(Products, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(default=timezone.now)
+
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    items = models.ManyToManyField('ProductVariant', through='OrderItem')
+    order_items = models.ManyToManyField(OrderItem)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
@@ -211,27 +221,23 @@ class Order(models.Model):
     ])
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    line_total = models.DecimalField(max_digits=10, decimal_places=2)
-
 class Payment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    payment_method = models.CharField(max_length=50)
+    payment_method = models.CharField(max_length=20, choices=[
+        ('cod', 'Cash On Delivery'),
+        ('digital payment', 'Digital Payment'),
+    ])
     payment_status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
     ])
-    transaction_id = models.CharField(max_length=100)
+    Transaction_id = models.CharField(max_length=30, unique=True, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
         return f"Payment for Order {self.order} - {self.user.first_name} - {self.amount}"
+from .signals import*

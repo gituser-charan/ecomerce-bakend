@@ -68,6 +68,15 @@ class AddressSerializer(serializers.ModelSerializer):
         model = ShippingAddress
         fields = "__all__"
 
+class InventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = "__all__"
+    profile = serializers.ImageField(
+            default=settings.MEDIA_URL + 'default_image.jpg',
+            required=False  # Make the field optional
+        )
+    
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
